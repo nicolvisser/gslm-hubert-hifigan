@@ -4,6 +4,7 @@
 # from acoustic.acoustic import AcousticModel
 # from hifigan.hifigan.generator import HifiganGenerator
 
+from typing import Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -60,7 +61,7 @@ class GSLM(nn.Module):
         )
 
     @torch.inference_mode()
-    def encode(self, wav, sr, dedupe=True):
+    def encode(self, wav: torch.Tensor, sr: int, dedupe: bool = True) -> torch.Tensor:
         assert wav.dim() == 2, "wav must be 2D"
         assert sr == 16000
         # trucate wavefore to nearest 320 frames shorter than original
@@ -89,7 +90,9 @@ class GSLM(nn.Module):
         return units
 
     @torch.inference_mode()
-    def decode(self, units, deduped=True):
+    def decode(
+        self, units: torch.Tensor, deduped: bool = True
+    ) -> Tuple[torch.Tensor, int]:
         if deduped:
             units = self.duration_predictor.redupe(units)
 
@@ -107,9 +110,9 @@ class GSLM(nn.Module):
         return audio, 16000
 
     @torch.inference_mode()
-    def dedupe(self, units):
+    def dedupe(self, units: torch.Tensor) -> torch.Tensor:
         return dedupe_fn(units)
 
     @torch.inference_mode()
-    def redupe(self, units):
+    def redupe(self, units: torch.Tensor) -> torch.Tensor:
         return self.duration_predictor.redupe(units)

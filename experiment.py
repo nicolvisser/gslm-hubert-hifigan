@@ -77,9 +77,9 @@ def run_experiment(librispeech_dir, output_dir, subset):
                     units_ = units_.to(dtype=torch.int16, device="cpu")
                     wav_ = wav_.to(device="cpu")
 
-                    np.save(units_out_path, units.cpu().numpy())
-                    np.save(units_deduped_out_path, units_deduped.cpu().numpy())
-                    np.save(units_reduped_out_path, units_.cpu().numpy())
+                    np.save(units_out_path, units.numpy())
+                    np.save(units_deduped_out_path, units_deduped.numpy())
+                    np.save(units_reduped_out_path, units_.numpy())
                     torchaudio.save(wav_resynthesized_out_path, wav_, sr)
 
                 except Exception as e:
