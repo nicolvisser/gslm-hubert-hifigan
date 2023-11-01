@@ -1,0 +1,15 @@
+[submodule "hubert"]
+	path = hubert
+	url = https://github.com/bshall/hubert
+[submodule "kmeans"]
+	path = kmeans
+	url = https://github.com/nicolvisser/hubert-kmeans
+[submodule "duration"]
+	path = duration
+	url = https://github.com/nicolvisser/duration-predictor
+[submodule "acoustic"]
+	path = acoustic
+	url = https://github.com/nicolvisser/acoustic-model
+[submodule "hifigan"]
+	path = hifigan
+	url = https://github.com/bshall/hifigan
