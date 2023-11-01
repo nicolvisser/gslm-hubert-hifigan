@@ -59,6 +59,7 @@ class GSLM(nn.Module):
             "hifigan",
         )
 
+    @torch.inference_mode()
     def encode(self, wav, sr, dedupe=True):
         assert wav.dim() == 2, "wav must be 2D"
         assert sr == 16000
@@ -87,6 +88,7 @@ class GSLM(nn.Module):
 
         return units
 
+    @torch.inference_mode()
     def decode(self, units, deduped=True):
         if deduped:
             units = self.duration_predictor.redupe(units)
@@ -103,3 +105,11 @@ class GSLM(nn.Module):
         audio = audio.squeeze(0)
 
         return audio, 16000
+
+    @torch.inference_mode()
+    def dedupe(self, units):
+        return dedupe_fn(units)
+
+    @torch.inference_mode()
+    def redupe(self, units):
+        return self.duration_predictor.redupe(units)

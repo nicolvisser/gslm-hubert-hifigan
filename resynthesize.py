@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import click
-import torch
 import torchaudio
 from tqdm import tqdm
 
@@ -31,10 +30,9 @@ def resynthesize(input, output, n_units, dp_lambda, extension):
         try:
             wav, sr = torchaudio.load(wav_path)
 
-            with torch.inference_mode():
-                wav = wav.cuda()
-                units = model.encode(wav, sr, dedupe=True)
-                wav_, sr = model.decode(units, deduped=True)
+            wav = wav.cuda()
+            units = model.encode(wav, sr, dedupe=True)
+            wav_, sr = model.decode(units, deduped=True)
 
             out_path = output / wav_path.relative_to(input).with_suffix(".wav")
             out_path.parent.mkdir(parents=True, exist_ok=True)
