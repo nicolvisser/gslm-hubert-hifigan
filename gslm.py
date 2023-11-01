@@ -4,12 +4,12 @@
 # from acoustic.acoustic import AcousticModel
 # from hifigan.hifigan.generator import HifiganGenerator
 
-from dpdp import dpdp
-from dedupe import dedupe as dedupe_fn
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+from dedupe import dedupe as dedupe_fn
+from dpdp import dpdp
 
 
 class GSLM(nn.Module):

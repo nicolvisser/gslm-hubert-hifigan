@@ -1,11 +1,11 @@
-import click
 from pathlib import Path
-from sympy import E
 
+import click
 import torch
 import torchaudio
-from gslm import GSLM
 from tqdm import tqdm
+
+from gslm import GSLM
 
 
 @click.command()
