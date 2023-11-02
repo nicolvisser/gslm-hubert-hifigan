@@ -7,36 +7,24 @@ import torchaudio
 from tqdm import tqdm
 
 from gslm import GSLM
-
-dp_lmbdas = {
-    50: [0],
-    100: [0, 4, 8, 12, 16, 20],
-    200: [0, 4, 8, 12, 16, 20],
-    500: [0, 4, 8, 12, 16, 20, 24, 28],
-    1000: [0, 4, 8, 12, 16, 20],
-    2000: [0, 4, 8, 12, 16, 20],
-}
+from config import ExperimentConfig
 
 
-@click.command()
-@click.argument("librispeech_dir", type=click.Path(exists=True))
-@click.argument("output_dir", type=click.Path())
-@click.option("-s", "--subset", default="dev-clean")
-def run_experiment(librispeech_dir, output_dir, subset):
+def run_experiment():
     """Resynthesize a directory of audio files."""
 
-    librispeech_dir = Path(librispeech_dir)
-    output_dir = Path(output_dir)
+    librispeech_dir = Path(ExperimentConfig.librispeech_dir)
+    output_dir = Path(ExperimentConfig.output_dir)
 
     dataset = torchaudio.datasets.LIBRISPEECH(
         librispeech_dir.parent,
-        url=subset,
+        url="dev-clean",
         download=False,
         folder_in_archive=librispeech_dir.name,
     )
 
-    for n_units in dp_lmbdas.keys():
-        for dp_lambda in dp_lmbdas[n_units]:
+    for n_units in ExperimentConfig.dp_lmbdas.keys():
+        for dp_lambda in ExperimentConfig.dp_lmbdas[n_units]:
             click.echo(f"Running for {n_units} units and lambda={dp_lambda}")
             click.echo("Loading model...")
 
