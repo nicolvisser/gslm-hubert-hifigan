@@ -1,9 +1,0 @@
-torch
-torchaudio
-torchvision
-matplotlib
-tqdm
-scikit-learn
-soundfile
-click
-whisper
