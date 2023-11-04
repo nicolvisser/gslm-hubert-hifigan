@@ -28,7 +28,7 @@ def run_experiment():
             click.echo(f"Running for {n_units} units and lambda={dp_lambda}")
             click.echo("Loading model...")
 
-            model = GSLM(n_units=50, dp_lambda=0).cuda().eval()
+            model = GSLM(n_units=n_units, dp_lambda=dp_lambda).cuda().eval()
 
             output_subdir = output_dir / f"n_units-{n_units}-dp_lambda-{dp_lambda}"
 
