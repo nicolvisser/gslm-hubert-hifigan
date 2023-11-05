@@ -1,10 +1,10 @@
 torch
 torchaudio
 torchvision
-matplotlib
-tqdm
-scikit-learn
+openai-whisper
 soundfile
-click
-whisper
+scikit-learn
+matplotlib
 ipywidgets
+tqdm
+click

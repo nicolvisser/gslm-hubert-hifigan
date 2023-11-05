@@ -1,6 +1,6 @@
 class ExperimentConfig:
     librispeech_dir = "/home/nicolvisser/datasets/LibriSpeech"
-    output_dir = "/home/nicolvisser/workspace/gslm-hubert-hifigan/output"
+    output_dir = "/home/nicolvisser/workspace/gslm-hubert-hifigan/output/experiment"
     dp_lmbdas = {
         50: [0],
         100: [0, 4, 8, 12, 16, 20],

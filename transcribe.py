@@ -2,7 +2,9 @@ from pathlib import Path
 import whisper
 from tqdm import tqdm
 
-paths = sorted(list(Path("/media/hdd/gslm-hubert-hifigan-output").rglob("*.wav")))
+from config import ExperimentConfig
+
+paths = sorted(list(Path(ExperimentConfig.output_dir).rglob("*.wav")))
 
 model = whisper.load_model("base.en", "cuda")
 
@@ -12,7 +14,9 @@ for path in tqdm(paths):
     if out_path.exists():
         continue
 
-    result = model.transcribe(str(paths[0]), )
+    result = model.transcribe(
+        str(paths[0]),
+    )
 
     transcription = result["text"]
 
