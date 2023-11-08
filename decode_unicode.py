@@ -12,8 +12,8 @@ from gslm import GSLM
 @click.command()
 @click.argument("input", type=click.Path(exists=True))
 @click.argument("output", type=click.Path())
-@click.option("-n", "--n_units", default="500")
-@click.option("-l", "--dp_lambda", default="0")
+@click.option("-n", "--n_units", type=click.INT, default=500)
+@click.option("-l", "--dp_lambda", type=click.FLOAT, default=0.0)
 @click.option("-e", "--extension", default=".txt")
 def resynthesize(input, output, n_units, dp_lambda, extension):
     """Decodes a directory of text files into a audio files"""
@@ -26,7 +26,7 @@ def resynthesize(input, output, n_units, dp_lambda, extension):
     click.echo(f"Using {n_units} units and {dp_lambda} lambda")
     click.echo("Loading model...")
 
-    model = GSLM(n_units=50, dp_lambda=0).cuda().eval()
+    model = GSLM(n_units=n_units, dp_lambda=dp_lambda).cuda().eval()
 
     for txt_path in tqdm(sorted(list(input.rglob(f"*{extension}")))):
         try:
