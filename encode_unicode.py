@@ -8,25 +8,54 @@ from gslm import GSLM
 
 
 @click.command()
-@click.argument("input", type=click.Path(exists=True))
-@click.argument("output", type=click.Path())
-@click.option("-n", "--n_units", type=click.INT, default=500)
-@click.option("-l", "--dp_lambda", type=click.FLOAT, default=0.0)
-@click.option("-e", "--extension", default=".flac")
-def resynthesize(input, output, n_units, dp_lambda, extension):
+@click.option(
+    "-i",
+    "--input_dir",
+    help="Path to input directory containing audio.",
+    type=click.Path(exists=True),
+    prompt=True,
+)
+@click.option(
+    "-o",
+    "--output_dir",
+    help="Path to output directory to hold text files.",
+    type=click.Path(),
+    prompt=True,
+)
+@click.option(
+    "-n",
+    "--n_units",
+    help="The number of k-means units to use.",
+    type=click.INT,
+    prompt=True,
+)
+@click.option(
+    "-l",
+    "--dp_lambda",
+    help="The lambda paramter of DPDP to use.",
+    type=click.FLOAT,
+    prompt=True,
+)
+@click.option(
+    "-e",
+    "--extension",
+    help="The extension of the audio files in the input directory.",
+    prompt=True,
+)
+def resynthesize(input_dir, output_dir, n_units, dp_lambda, extension):
     """Encodes a directory of audio files into a unicode text file of chinese characters within region 4e00 and 9fff."""
 
-    input = Path(input)
-    output = Path(output)
+    input_dir = Path(input_dir)
+    output_dir = Path(output_dir)
 
-    click.echo(f"Encoding audio files from {input.absolute()}")
-    click.echo(f"Saving encoded text files to {output.absolute()}")
+    click.echo(f"Encoding audio files from {input_dir.absolute()}")
+    click.echo(f"Saving encoded text files to {output_dir.absolute()}")
     click.echo(f"Using {n_units} units and {dp_lambda} lambda")
     click.echo("Loading model...")
 
     model = GSLM(n_units=n_units, dp_lambda=dp_lambda).cuda().eval()
 
-    for wav_path in tqdm(sorted(list(input.rglob(f"*{extension}")))):
+    for wav_path in tqdm(sorted(list(input_dir.rglob(f"*{extension}")))):
         try:
             wav, sr = torchaudio.load(wav_path)
 
@@ -37,7 +66,7 @@ def resynthesize(input, output, n_units, dp_lambda, extension):
 
             unicode_text = "".join(unicode_chars)
 
-            out_path = output / wav_path.relative_to(input).with_suffix(".txt")
+            out_path = output_dir / wav_path.relative_to(input_dir).with_suffix(".txt")
             out_path.parent.mkdir(parents=True, exist_ok=True)
 
             with open(out_path, "w", encoding="utf-8") as f:
@@ -45,7 +74,7 @@ def resynthesize(input, output, n_units, dp_lambda, extension):
 
         except Exception as e:
             click.echo(f"Failed to encode {wav_path}")
-            (output / "errors.txt").write_text(f"{wav_path}\n{e}\n\n")
+            (output_dir / "errors.txt").write_text(f"{wav_path}\n{e}\n\n")
 
 
 if __name__ == "__main__":
