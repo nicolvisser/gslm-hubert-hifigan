@@ -1,8 +1,6 @@
 from pathlib import Path
 
 import click
-import numpy as np
-import torch
 import torchaudio
 from tqdm import tqdm
 
