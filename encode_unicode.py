@@ -42,7 +42,14 @@ from gslm import GSLM
     help="The extension of the audio files in the input directory.",
     prompt=True,
 )
-def resynthesize(input_dir, output_dir, n_units, dp_lambda, extension):
+@click.option(
+    "-d",
+    "--dedupe",
+    help="Whether the units should be deduped.",
+    default=True,
+    prompt=True,
+)
+def resynthesize(input_dir, output_dir, n_units, dp_lambda, extension, dedupe):
     """Encodes a directory of audio files into a unicode text file of chinese characters within region 4e00 and 9fff."""
 
     input_dir = Path(input_dir)
@@ -56,25 +63,17 @@ def resynthesize(input_dir, output_dir, n_units, dp_lambda, extension):
     model = GSLM(n_units=n_units, dp_lambda=dp_lambda).cuda().eval()
 
     for wav_path in tqdm(sorted(list(input_dir.rglob(f"*{extension}")))):
-        try:
-            wav, sr = torchaudio.load(wav_path)
+        wav, sr = torchaudio.load(wav_path)
 
-            wav = wav.cuda()
-            units = model.encode(wav, sr, dedupe=True).cpu().numpy()
+        wav = wav.cuda()
 
-            unicode_chars = [chr(u + 0x4E00) for u in units]
+        unicode_text = model.encode_unicode(wav, sr, dedupe=dedupe).cpu().numpy()
 
-            unicode_text = "".join(unicode_chars)
+        out_path = output_dir / wav_path.relative_to(input_dir).with_suffix(".txt")
+        out_path.parent.mkdir(parents=True, exist_ok=True)
 
-            out_path = output_dir / wav_path.relative_to(input_dir).with_suffix(".txt")
-            out_path.parent.mkdir(parents=True, exist_ok=True)
-
-            with open(out_path, "w", encoding="utf-8") as f:
-                f.write(unicode_text)
-
-        except Exception as e:
-            click.echo(f"Failed to encode {wav_path}")
-            (output_dir / "errors.txt").write_text(f"{wav_path}\n{e}\n\n")
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(unicode_text)
 
 
 if __name__ == "__main__":

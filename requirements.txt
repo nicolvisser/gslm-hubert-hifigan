@@ -3,3 +3,5 @@ torchaudio
 scikit-learn
 matplotlib
 tqdm
+click
+soundfile

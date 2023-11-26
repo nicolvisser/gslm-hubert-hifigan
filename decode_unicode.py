@@ -35,12 +35,19 @@ from gslm import GSLM
 @click.option(
     "-l",
     "--dp_lambda",
-    "The lambda paramter of DPDP to use.",
+    help="The lambda paramter of DPDP to use.",
     type=click.FLOAT,
     default=0.0,
     prompt=True,
 )
-def resynthesize(input, output, n_units, dp_lambda):
+@click.option(
+    "-d",
+    "--deduped",
+    help="Whether the units are deduped.",
+    default=True,
+    prompt=True,
+)
+def resynthesize(input, output, n_units, dp_lambda, deduped):
     """Decodes a directory of text files into a audio files"""
 
     input = Path(input)
@@ -53,18 +60,12 @@ def resynthesize(input, output, n_units, dp_lambda):
 
     model = GSLM(n_units=n_units, dp_lambda=dp_lambda).cuda().eval()
 
-    for txt_path in tqdm(sorted(list(input.rglob(".txt")))):
+    for txt_path in tqdm(sorted(list(input.rglob("*.txt")))):
         try:
             with open(txt_path, "r", encoding="utf-8") as f:
                 unicode_text = f.read()
 
-            unit_values = [ord(char) - 0x4E00 for char in unicode_text]
-
-            unit_array = np.array(unit_values, dtype=np.int64)
-
-            units = torch.from_numpy(unit_array).cuda()
-
-            wav, sr = model.decode(units, deduped=True)
+            wav, sr = model.decode_unicode(unicode_text, deduped=deduped)
 
             out_path = output / txt_path.relative_to(input).with_suffix(".wav")
             out_path.parent.mkdir(parents=True, exist_ok=True)

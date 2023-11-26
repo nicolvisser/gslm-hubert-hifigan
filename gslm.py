@@ -89,6 +89,12 @@ class GSLM(nn.Module):
 
         return units
 
+    def encode_unicode(self, wav: torch.Tensor, sr: int, dedupe: bool = True) -> str:
+        units = self.encode(wav, sr, dedupe).to("cpu")
+        unicode_chars = [chr(u + 0x4E00) for u in units]
+        unicode_text = "".join(unicode_chars)
+        return unicode_text
+
     @torch.inference_mode()
     def decode(
         self, units: torch.Tensor, deduped: bool = True
@@ -108,6 +114,15 @@ class GSLM(nn.Module):
         audio = audio.squeeze(0)
 
         return audio, 16000
+
+    def decode_unicode(
+        self, unicode_text: str, deduped: bool = True
+    ) -> Tuple[torch.Tensor, int]:
+        unit_values = [ord(char) - 0x4E00 for char in unicode_text]
+        units = torch.tensor(unit_values, dtype=torch.int64)
+        device = next(self.parameters()).device
+        units = units.to(device)
+        return self.decode(units, deduped)
 
     @torch.inference_mode()
     def dedupe(self, units: torch.Tensor) -> torch.Tensor:
